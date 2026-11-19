@@ -3,24 +3,15 @@
 import csv
 from datetime import date, timedelta
 from pathlib import Path
-import re
 import sys
 import tempfile
 import time
 
+from ..schemas import validate_symbols
+
 
 DOWNLOAD_BASE_URL = "https://www.ilboursa.com/marches/download/"
 EXPECTED_COLUMNS = ["symbole", "date", "ouverture", "haut", "bas", "cloture", "volume"]
-
-
-def validate_symbols(symbols) -> list[str]:
-    """Normalize a nonempty symbol list and reject unsafe URL/file components."""
-    if not isinstance(symbols, list) or not symbols:
-        raise ValueError("symbols must be a nonempty list of stock symbols")
-    if any(not isinstance(symbol, str) or not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_.-]{0,19}", symbol)
-           for symbol in symbols):
-        raise ValueError("Each symbol must contain 1-20 letters, digits, dots, underscores or hyphens, starting with a letter or digit")
-    return list(dict.fromkeys(symbol.upper() for symbol in symbols))
 
 
 def date_ranges(start, end):

@@ -29,7 +29,7 @@ rows are skipped; different rows for the same date are preserved for the future
 validation step. Writes replace files atomically, but completed windows remain
 on disk if a later window fails. Any failed window makes the command exit nonzero.
 These are accumulated raw histories, not byte-for-byte archives of each response.
-Processing, DVC and scheduled workflows are separate implementation steps.
+Processing is available through the separate process command below; DVC and scheduling are later steps.
 
 Run the ingestion checks (no requests to Ilboursa):
 
@@ -37,6 +37,58 @@ Run the ingestion checks (no requests to Ilboursa):
 python -m unittest discover -s tests/market_data -v
 ```
 
+
+## Validate and process market data
+
+Run processing independently of downloading:
+
+```powershell
+python -m market_data.cli process --config configs/market_data.json --symbols ATB --as-of 2026-11-19
+```
+
+The existing download command still works; `python -m market_data.cli download ...`
+is its explicit form. Processing reads `raw_dir` and `processed_dir` from the JSON.
+`--output-dir` overrides the latter; `--symbols` selects a subset. Relative paths
+use the current working directory.
+
+`--as-of YYYY-MM-DD` is an exclusive session-date cutoff: dates on or after it are
+excluded. The default is the JSON's `as_of`, or today's UTC date when unset.
+Pass it explicitly for reproducibility. `max_age_days` defaults to 14; set it in
+the JSON or with `--max-age-days`. Old but valid data is published with
+`freshness: stale`; staleness is separate from invalid observations.
+
+Valid outputs have columns `symbol,timestamp,open,high,low,close,volume`.
+The timestamp is a timezone-free exchange session date in YYYY-MM-DD format.
+Parsing supports French column names, DD/MM/YYYY or YYYY-MM-DD dates, UTF-8/BOM,
+semicolon/comma CSV delimiters and decimal commas. Missing/mismatched symbols,
+ambiguous columns, malformed rows, invalid dates, nonfinite/nonpositive prices,
+negative/invalid volume, conflicting dates and inconsistent OHLC invalidate a symbol.
+Exact duplicate canonical rows are removed and counted. Additional provider columns
+are omitted. Numeric checks apply to retained observations, allowing incomplete-day
+numeric placeholders to be excluded by the cutoff.
+
+No prices/sessions are filled and no scaling, model features or targets are created.
+Prices retain adjustment status `unverified`; calendar completeness is not asserted.
+Raw files are read once for parsing and hashing and never modified.
+
+`processed_dir/manifest.json` records the requested symbols, cutoff, processing
+version, raw/processed SHA-256 checksums, date coverage, row counts, exclusions,
+duplicates, freshness and errors. It describes this invocation's requested symbols
+only; unrequested files are untouched. The same input, settings and code produce
+byte-identical valid CSVs and manifests.
+
+Invalid/missing sources cause an older processed CSV to be archived in the sibling
+`archive/<processed-directory-name>/` directory under its content checksum.
+Other symbols continue. Any invalid requested symbol causes exit code 1;
+configuration errors use code 2. Files are replaced atomically, but the whole batch
+is not transactional: check its exit code and manifest before consuming a refresh.
+DVC and scheduled refreshes remain separate steps.
+
+Run all offline market-data checks:
+
+```powershell
+python -m unittest discover -s tests/market_data -v
+```
 
 Compare LSTM, GRU, ARIMA and simple baselines on Tunisian stock returns, then
 train versioned candidates and serve predictions through FastAPI.

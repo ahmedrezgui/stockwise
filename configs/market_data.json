@@ -58,5 +58,6 @@
     "UMED",
     "WIFAK"
   ],
-  "raw_dir": "data/raw"
+  "raw_dir": "data/raw",
+  "processed_dir": "data/processed"
 }
