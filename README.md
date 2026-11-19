@@ -1,5 +1,43 @@
 # Stock forecasting with PyTorch
 
+## Raw market-data ingestion
+
+Install the project in your active environment:
+
+```powershell
+python -m pip install -e ".[ingestion]"
+python -m market_data.cli --config configs/market_data.json --date 01-10-2026 --symbols ATB
+```
+
+The default browser is installed Google Chrome. For bundled Chromium, first run
+`python -m playwright install chromium`, then use `--browser chromium`.
+Use `--headless` for unattended execution; if the provider requires manual
+verification, the run fails instead of waiting for input.
+
+Edit `configs/market_data.json` to choose `symbols` and `raw_dir`. Its initial
+symbol list comes from the original project's active configuration; it is not a
+verified listing of all currently traded instruments. Omit `--symbols` to use
+that list, or supply symbols to override it. `--output-dir` overrides `raw_dir`.
+`--date all` starts at 2010-01-01. The end date is the current local date.
+
+Relative configuration/output paths resolve from the **current working directory**,
+so run the examples from the repository root. Absolute paths work from elsewhere.
+The provider module does not locate the repository or read configuration itself.
+
+Each symbol produces a semicolon-delimited provider-format CSV. Exact duplicate
+rows are skipped; different rows for the same date are preserved for the future
+validation step. Writes replace files atomically, but completed windows remain
+on disk if a later window fails. Any failed window makes the command exit nonzero.
+These are accumulated raw histories, not byte-for-byte archives of each response.
+Processing, DVC and scheduled workflows are separate implementation steps.
+
+Run the ingestion checks (no requests to Ilboursa):
+
+```powershell
+python -m unittest discover -s tests/market_data -v
+```
+
+
 Compare LSTM, GRU, ARIMA and simple baselines on Tunisian stock returns, then
 train versioned candidates and serve predictions through FastAPI.
 
