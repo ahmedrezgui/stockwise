@@ -1,0 +1,181 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+.claude/
+
+# PyInstaller
+*.manifest
+*.spec
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+cover/
+
+# Translations
+*.mo
+*.pot
+
+# Django logs and database
+*.log
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+*.sqlite
+
+# Flask instance directory
+instance/
+.webassets-cache
+
+# Scrapy
+.scrapy
+
+# Sphinx documentation
+docs/_build/
+
+# Personal documentation stays local.
+/docs/*
+!/docs/assistant.md
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints
+
+# IPython
+profile_default/
+ipython_config.py
+
+# pyenv
+.python-version
+
+# celery beat schedule file
+celerybeat-schedule
+
+# SageMath parsed files
+*.sage.py
+
+# Environments
+.env
+.venv
+.venv-forecast/
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Spyder and Rope project settings
+.spyderproject
+.spyproject
+.ropeproject
+
+# mkdocs documentation
+/site
+
+# mypy, Pyre, pytype static analysis
+.mypy_cache/
+.dmypy.json
+dmypy.json
+.pyre/
+.pytype/
+
+# Cython debug symbols
+cython_debug/
+
+# VS Code settings
+.vscode/
+
+# DATA MANAGEMENT WITH DVC & AZURE BLOB STORAGE 
+
+# Ignore actual dataset files, but allow their `.dvc` pointers
+data/raw/*.csv
+data/processed/*.csv
+data/processed/manifest.json
+
+# Allow DVC metadata files to be tracked
+!data/raw/
+!data/processed/
+!data/raw/*.dvc
+!data/processed/*.dvc
+!data/raw/.gitignore
+!data/processed/.gitignore
+
+# Ignore DVC cache directory (local storage)
+.dvc/cache/
+.dvc/tmp/
+
+# Model and Data files (Ignored because they are tracked via DVC)
+*.xls
+*.csv
+*.h5
+*.hdf5
+*.parquet
+*.pkl
+*.joblib
+
+# Reproducible local forecasting artifacts; publish deliberately through storage.
+artifacts/
+deployment/
+*.pt
+mlruns/
+mlflow.db
+mlflow.db-*
+.ruff_cache/
+reports/smoke/
+reports/monitoring/
+*.sqlite3
+*.sqlite3-*
+# Generated portfolio results are intentionally versionable.
+!reports/**/*.csv
+
+# Azure setup and deployment guides stay local.
+/API_DEPLOYMENT.md
+/AZURE_OPERATIONS.md
+/AZURE_STUDENT_SETUP.md
+/AZURE_RESOURCE_GUIDE.md
+
+mlflow-assistant.db
+mlflow-assistant.db-*
+node_modules/
+*.tsbuildinfo
+playwright-report/
+test-results/
